@@ -595,6 +595,7 @@ K-means uses squared Euclidean distance because it minimizes the sum of the squa
 I visualized the anomalies for three different days across different months and years. 12-14-2015, 11-26-2010, and 02-14-2024. The 2015 matches with weather type 5, the 2010 matches with weather type 3 and the 2024 day matches weather type 4. They do not match the types exactly but are able to capture the trends well.
 
 - Do your EOF spatial patterns match those shown in the paper?
+
 They are were close to those shown in the paper.
 
 - Do your weather type composites used with default settings (approximately matching the paper) match those in the paper? If not, why might they differ?
@@ -606,7 +607,9 @@ They are similar but do not match exactly. This could be because the paper's dat
 Reducing PCs results in really broad weather types that do not capture atmospheric trends well. Increasing it includes too much noise and is too specific to capture trends at all.
 
 - What is the effect of rescaling PCs before clustering? Try clustering without rescaling and compare results.
+
 Rescaling makes sure all the PCs are given equal importance in the clustering. Clustering without rescaling makes each weather type very extreme, unable to capture the more nuanced trends.
 
 - What is the impact of changing the number of clusters (k) on the weather type patterns?
-It earlier overgeneralizes the atmospheric patterns (too few) or breaks up the patterns to create artifical atmospheric trends.
+
+It either overgeneralizes the atmospheric patterns (too few) or breaks up the patterns to create artifical atmospheric trends.
