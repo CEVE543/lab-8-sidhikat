@@ -47,7 +47,6 @@ end
 
 Assign each data point to its nearest centroid using squared Euclidean distance.
 
-# TODO: Fix this function!
 Currently assigns points randomly. You need to:
 1. Compute squared Euclidean distance from each point to each centroid
 2. Assign each point to its nearest centroid
@@ -56,13 +55,24 @@ function assign_to_nearest_centroid(data::Matrix{T}, centroids::Matrix{T}) where
     n_samples = size(data, 1)
     k = size(centroids, 1)
     labels = zeros(Int, n_samples)
-
+  
+    #for each data point
     for i in 1:n_samples
-        # TODO: Fix this - should compute distances and find nearest
-        # Currently just assigns randomly
-        labels[i] = rand(1:k)
-    end
+        min_distance = Inf
+        nearest_centroid = 1
+        #for each centroid
+        for j in 1:k
+          #get squared euclidean distance to each centroid
+            distance = sum((data[i, :] .- centroids[j, :]).^2)
 
+            #assign each point to nearest centroid
+            if distance < min_distance
+                min_distance = distance
+                nearest_centroid = j
+            end
+        end
+        labels[i] = nearest_centroid
+    end
     return labels
 end
 
@@ -71,7 +81,6 @@ end
 
 Update each centroid to be the mean of all points assigned to that cluster.
 
-# TODO: Fix this function!
 Currently picks a random point from each cluster. You need to:
 1. Find all points assigned to that cluster
 2. Compute the mean of those points
@@ -89,10 +98,8 @@ function update_centroids(data::Matrix{T}, labels::Vector{Int}, k::Int) where {T
         cluster_points = data[cluster_mask, :]
 
         if size(cluster_points, 1) > 0
-            # TODO: Fix this - should compute mean of all cluster points
-            # Currently just picks a random point from the cluster
-            random_idx = rand(1:size(cluster_points, 1))
-            centroids[cluster, :] = cluster_points[random_idx, :]
+            # computes mean of all cluster points and updates centroid
+            centroids[cluster, :] = mean(cluster_points, dims=1)
         end
     end
 

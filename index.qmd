@@ -293,7 +293,10 @@ function plot_streamfunction_anomaly(sample_date::Date)
     Colorbar(fig[1, 2], hm, label=L"Streamfunction Anomaly ($10^6$ m$^2$/s)")
     fig
 end
-plot_streamfunction_anomaly(Date(2015, 12, 14))
+# plot_streamfunction_anomaly(Date(2015, 12, 14))
+plot_streamfunction_anomaly(Date(2010, 11, 26))
+# plot_streamfunction_anomaly(Date(2024, 2, 14))
+
 ```
 
 ### Step 1: Principal Component Analysis
@@ -472,11 +475,11 @@ Rescaling PCs to have equal variance gives each mode equal importance in the clu
 
 ```{julia}
 #| output: false
-rescale_pcs = true
+rescale_pcs = false
 if rescale_pcs
     pc_scores_scaled = (pc_scores .- mean(pc_scores, dims=1)) ./ std(pc_scores, dims=1)
 else
-    pc_scores_scaled = pc_scores
+    pc_scores_scaled = Matrix(pc_scores)
 end
 ```
 
@@ -506,7 +509,7 @@ end
 Based on the elbow plot, choose a number of clusters and run k-means:
 
 ```{julia}
-n_clusters = 6
+n_clusters = 7
 result = kmeans(pc_scores_scaled, n_clusters; verbose=true)
 
 println("\nConverged: $(result.converged)")
@@ -574,14 +577,36 @@ Answer the following questions about the weather typing methodology:
 ### Implementation Questions
 
 - Explain in your own words what the `assign_to_nearest_centroid` function does and why it's important for k-means clustering.
+
+The `assign_to_nearest_centroid` function looks at every data point, and assigns it to the closest cluster initialization by using squared euclidian distance. It is important for k-means in that it allocates data points to a cluster/pattern. 
+
 - Explain in your own words what the `update_centroids` function does and why it's important for k-means clustering.
+
+The `update_centroids` function calculates the mean of all the data points in a cluster and then updates the centroid to that mean. This makese sure that it reduces the WCCS. 
+
 - Why does k-means use squared Euclidean distance rather than absolute distance? What would happen if you used absolute distance instead?
+
+K-means uses squared Euclidean distance because it minimizes the sum of the squared distances to find the centroid and creates spherical clusters. If we used absolute distance, the centroid would instead be the median of the cluster and create diamond shaped clusters. 
 
 ### Weather Typing Analysis
 
 - Visualize streamfunction anomalies for at least 3 different days. Then, identify the weather types for each day. How well do individual days match their cluster composite patterns?
+
+I visualized the anomalies for three different days across different months and years. 12-14-2015, 11-26-2010, and 02-14-2024. The 2015 matches with weather type 5, the 2010 matches with weather type 3 and the 2024 day matches weather type 4. They do not match the types exactly but are able to capture the trends well.
+
 - Do your EOF spatial patterns match those shown in the paper?
+They are were close to those shown in the paper.
+
 - Do your weather type composites used with default settings (approximately matching the paper) match those in the paper? If not, why might they differ?
+
+They are similar but do not match exactly. This could be because the paper's data is more limited, while my weather types are using a longer time period (until 2025).
+
 - What is the effect of changing the number of retained PCs on the weather type patterns?
+
+Reducing PCs results in really broad weather types that do not capture atmospheric trends well. Increasing it includes too much noise and is too specific to capture trends at all.
+
 - What is the effect of rescaling PCs before clustering? Try clustering without rescaling and compare results.
+Rescaling makes sure all the PCs are given equal importance in the clustering. Clustering without rescaling makes each weather type very extreme, unable to capture the more nuanced trends.
+
 - What is the impact of changing the number of clusters (k) on the weather type patterns?
+It earlier overgeneralizes the atmospheric patterns (too few) or breaks up the patterns to create artifical atmospheric trends.
